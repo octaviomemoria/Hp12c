@@ -18,10 +18,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-8">
+    <div className="min-h-screen bg-[#e5e5e5] flex flex-col items-center justify-center p-4 pb-20 sm:pb-4">
       
       {/* The Calculator */}
-      <div className="z-10">
+      <div className="z-10 w-full flex justify-center mb-4 sm:mb-8">
         <HP12C />
       </div>
 
@@ -36,7 +36,7 @@ const App: React.FC = () => {
 
       {/* AI Manual Panel */}
       {showHelp && (
-        <div className="fixed bottom-24 right-6 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 p-6 z-40 animate-fade-in-up">
+        <div className="fixed bottom-24 right-6 w-96 max-w-[90vw] bg-white rounded-lg shadow-2xl border border-gray-200 p-6 z-40 animate-fade-in-up">
            <h3 className="text-lg font-bold text-gray-800 mb-2">Smart Manual</h3>
            <p className="text-sm text-gray-500 mb-4">Ask how to calculate something using RPN.</p>
            
@@ -67,7 +67,7 @@ const App: React.FC = () => {
       )}
 
       {/* Footer Info */}
-      <div className="text-gray-500 text-xs text-center mt-8">
+      <div className="text-gray-500 text-xs text-center mt-4">
         HP 12C Platinum Web Replica | RPN Mode Only
       </div>
     </div>

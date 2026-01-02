@@ -46,7 +46,6 @@ export const HP12C: React.FC = () => {
       else if (key === 'x') keyId = 'xy';
 
       if (keyId) {
-        // Encontra a definição da tecla nos nossos constantes
         for (const row of CALCULATOR_KEYS) {
           const found = row.find(k => k.id === keyId);
           if (found) {
@@ -62,27 +61,18 @@ export const HP12C: React.FC = () => {
         const text = e.clipboardData?.getData('text');
         if (!text) return;
         
-        // Sanitize: allow digits, decimal point/comma, negative sign
         let cleanText = text.trim();
-        // Simple heuristic for negatives in parenthesis (accounting style)
         if (cleanText.startsWith('(') && cleanText.endsWith(')')) {
             cleanText = '-' + cleanText.slice(1, -1);
         }
-        
-        // Remove thousands separators (assumes US/UK , or EU . based on context is hard, 
-        // but standardizing on removing all non-numeric except last Dot/Comma is safer)
-        // For simplicity in this emulator, let's assume standard float input
-        cleanText = cleanText.replace(/,/g, '.'); // Replace commas with dots
-        
-        // Extract valid number format
+        cleanText = cleanText.replace(/,/g, '.');
         const match = cleanText.match(/-?\d+(\.\d+)?/);
         if (match) {
             const numStr = match[0];
-            // Send special PASTE action
             handleKeyPress({
                 id: 'PASTE_INPUT',
                 label: '',
-                action: 'NUM', // Dummy
+                action: 'NUM',
                 value: numStr
             });
         }
@@ -97,97 +87,100 @@ export const HP12C: React.FC = () => {
   }, [handleKeyPress]);
 
   return (
-    <div className="relative inline-block p-0 rounded-lg shadow-2xl overflow-hidden max-w-[800px] w-full mx-auto transform transition-transform md:hover:scale-[1.01]">
-      <div className="flex flex-col w-full bg-[#111] border-4 border-[#222] rounded-lg">
+    <div className="
+      relative 
+      flex flex-col 
+      w-full max-w-[600px] 
+      bg-[#111] 
+      rounded-xl shadow-2xl border-4 border-[#222]
+      overflow-hidden 
+      transform transition-transform hover:scale-[1.005]
+    ">
         
-        {/* TOP SECTION: SILVER / PLATINUM */}
-        <div className="relative bg-gradient-to-b from-[#e5e7eb] to-[#d1d5db] border-b-2 border-black p-4 sm:p-6 pb-2">
-           <div className="flex justify-between items-start mb-2 px-1">
-             <div className="flex flex-col">
-               <span className="font-sans text-sm sm:text-base font-semibold text-gray-800 tracking-tight">HP 12c</span>
-               <span className="font-sans text-xs sm:text-sm text-gray-600 -mt-1">Platinum</span>
-             </div>
-             <div className="bg-gradient-to-br from-[#333] to-[#000] rounded px-2 py-1 shadow-sm border border-gray-400">
-               <span className="font-serif italic font-bold text-white text-lg leading-none">hp</span>
-             </div>
-           </div>
-
-           {/* LCD Screen Container */}
-           <div 
-             className="mx-auto bg-[#889] p-[2px] rounded-md shadow-inner border border-gray-500 w-full max-w-md mt-2 cursor-pointer relative group"
-             onClick={handleCopy}
-             title="Click to copy value"
-           >
-              <div className="bg-[#aebfa3] h-14 sm:h-16 rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-end px-4 relative overflow-hidden transition-colors group-hover:bg-[#b8c9ad]">
-                  <div className="absolute inset-0 opacity-10 pointer-events-none" 
-                       style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize: '4px 4px'}}>
-                  </div>
-
-                  {copied && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20 animate-fade-in">
-                          <span className="bg-black text-white text-xs px-2 py-1 rounded">COPIED</span>
-                      </div>
-                  )}
-
-                  {!state.powerOn ? (
-                      <span className="opacity-0">OFF</span>
-                  ) : (
-                    <div className="relative w-full text-right">
-                      <div className="absolute top-[-10px] left-0 text-[8px] font-bold text-black opacity-60 flex gap-2">
-                         <span>{state.modifiers === ModifierState.F ? 'f' : ''}</span>
-                         <span>{state.modifiers === ModifierState.G ? 'g' : ''}</span>
-                         <span>{state.begMode ? 'BEGIN' : ''}</span>
-                      </div>
-                      
-                      <div className="absolute top-1 left-0 flex flex-wrap gap-1 max-w-[150px] opacity-70">
-                         {state.financial.n !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">n</div>}
-                         {state.financial.i !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">i</div>}
-                         {state.financial.PV !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">PV</div>}
-                         {state.financial.PMT !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">PMT</div>}
-                         {state.financial.FV !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">FV</div>}
-                      </div>
-
-                      <div className="absolute bottom-[-18px] left-0 text-[8px] font-bold text-black opacity-60">
-                         RPN {state.pendingOp ? ` ${state.pendingOp}` : ''}
-                      </div>
-
-                      <span className="lcd-text text-3xl sm:text-4xl text-black font-medium tracking-widest drop-shadow-sm select-none">
-                          {state.error || state.display}
-                      </span>
-                    </div>
-                  )}
-              </div>
-           </div>
-        </div>
-
-        {/* BOTTOM SECTION: KEYBOARD AREA */}
-        <div className="bg-[#1a1a1a] p-4 sm:p-6 pt-8 pb-8 relative">
-          <div className="grid grid-cols-10 gap-x-2 gap-y-8 sm:gap-x-3 sm:gap-y-10 relative z-10">
-            {CALCULATOR_KEYS.map((row, rIdx) => (
-              <React.Fragment key={rIdx}>
-                {row.map((k, kIdx) => {
-                  // Lógica de posicionamento explícita para evitar o deslocamento causado pelo ENTER row-span-2
-                  let gridCol = kIdx + 1;
-                  let gridRow = rIdx + 1;
-
-                  // Se estivermos na Linha 4 (rIdx=3), e passamos da coluna 5, precisamos pular a coluna 6 (ocupada pelo ENTER)
-                  if (rIdx === 3 && kIdx >= 5) {
-                    gridCol = kIdx + 2;
-                  }
-
-                  return (
-                    <div 
-                      key={k.id} 
-                      className={`${k.className || 'col-span-1'} relative`}
-                      style={{ gridColumn: gridCol, gridRow: gridRow }}
-                    >
-                      <Key k={k} onClick={handleKeyPress} />
-                    </div>
-                  );
-                })}
-              </React.Fragment>
-            ))}
+      {/* TOP SECTION: SILVER / PLATINUM */}
+      <div className="relative bg-gradient-to-b from-[#e5e7eb] to-[#d1d5db] border-b-2 border-black p-4 sm:p-6 pb-2">
+          <div className="flex justify-between items-start mb-4 px-1">
+            <div className="flex flex-col">
+              <span className="font-sans text-base sm:text-lg font-semibold text-gray-800 tracking-tight">HP 12c</span>
+              <span className="font-sans text-xs sm:text-sm text-gray-600 -mt-1">Platinum</span>
+            </div>
+            <div className="bg-gradient-to-br from-[#333] to-[#000] rounded px-2 py-1 shadow-sm border border-gray-400">
+              <span className="font-serif italic font-bold text-white text-xl leading-none">hp</span>
+            </div>
           </div>
+
+          {/* LCD Screen Container */}
+          <div 
+            className="mx-auto bg-[#889] p-[2px] rounded-md shadow-inner border border-gray-500 w-full max-w-sm cursor-pointer relative group"
+            onClick={handleCopy}
+            title="Click to copy value"
+          >
+            <div className="bg-[#aebfa3] h-14 sm:h-16 rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-end px-4 relative overflow-hidden transition-colors group-hover:bg-[#b8c9ad]">
+                <div className="absolute inset-0 opacity-10 pointer-events-none" 
+                      style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize: '4px 4px'}}>
+                </div>
+
+                {copied && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-20 animate-fade-in">
+                        <span className="bg-black text-white text-xs px-2 py-1 rounded">COPIED</span>
+                    </div>
+                )}
+
+                {!state.powerOn ? (
+                    <span className="opacity-0">OFF</span>
+                ) : (
+                  <div className="relative w-full text-right">
+                    <div className="absolute top-[-8px] md:top-[-10px] left-0 text-[8px] font-bold text-black opacity-60 flex gap-2">
+                        <span>{state.modifiers === ModifierState.F ? 'f' : ''}</span>
+                        <span>{state.modifiers === ModifierState.G ? 'g' : ''}</span>
+                        <span>{state.begMode ? 'BEGIN' : ''}</span>
+                    </div>
+                    
+                    <div className="absolute top-1 left-0 flex flex-wrap gap-1 max-w-[150px] opacity-70 hidden sm:flex">
+                        {state.financial.n !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">n</div>}
+                        {state.financial.i !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">i</div>}
+                        {state.financial.PV !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">PV</div>}
+                        {state.financial.PMT !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">PMT</div>}
+                        {state.financial.FV !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">FV</div>}
+                    </div>
+
+                    <div className="absolute bottom-[-14px] md:bottom-[-18px] left-0 text-[8px] font-bold text-black opacity-60">
+                        RPN {state.pendingOp ? ` ${state.pendingOp}` : ''}
+                    </div>
+
+                    <span className="lcd-text text-3xl sm:text-4xl text-black font-medium tracking-widest drop-shadow-sm select-none truncate w-full block">
+                        {state.error || state.display}
+                    </span>
+                  </div>
+                )}
+            </div>
+          </div>
+      </div>
+
+      {/* BOTTOM SECTION: KEYBOARD AREA */}
+      <div className="bg-[#1a1a1a] p-2 sm:p-4 md:p-6 pb-6 sm:pb-8">
+        <div className="grid grid-cols-10 gap-x-1 gap-y-3 sm:gap-x-2 sm:gap-y-4">
+          {CALCULATOR_KEYS.map((row, rIdx) => (
+            <React.Fragment key={rIdx}>
+              {row.map((k, kIdx) => {
+                let gridCol = kIdx + 1;
+                let gridRow = rIdx + 1;
+                if (rIdx === 3 && kIdx >= 5) {
+                  gridCol = kIdx + 2;
+                }
+
+                return (
+                  <div 
+                    key={k.id} 
+                    className={`${k.className || 'col-span-1'} relative flex flex-col`}
+                    style={{ gridColumn: gridCol, gridRow: gridRow }}
+                  >
+                    <Key k={k} onClick={handleKeyPress} />
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>
