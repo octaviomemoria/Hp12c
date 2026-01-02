@@ -159,7 +159,8 @@ export const HP12C: React.FC = () => {
 
       {/* BOTTOM SECTION: KEYBOARD AREA */}
       <div className="bg-[#1a1a1a] p-2 sm:p-4 md:p-6 pb-6 sm:pb-8">
-        <div className="grid grid-cols-10 gap-x-1 gap-y-3 sm:gap-x-2 sm:gap-y-4">
+        {/* Adjusted grid gap to be tighter (gap-y-2) to fix spacing issues */}
+        <div className="grid grid-cols-10 gap-x-1 gap-y-2 sm:gap-x-2 sm:gap-y-3">
           {CALCULATOR_KEYS.map((row, rIdx) => (
             <React.Fragment key={rIdx}>
               {row.map((k, kIdx) => {
@@ -168,12 +169,15 @@ export const HP12C: React.FC = () => {
                 if (rIdx === 3 && kIdx >= 5) {
                   gridCol = kIdx + 2;
                 }
+                
+                // Fix: Ensure row-span-2 is respected in inline styles
+                const rowStyle = k.className?.includes('row-span-2') ? `${gridRow} / span 2` : gridRow;
 
                 return (
                   <div 
                     key={k.id} 
                     className={`${k.className || 'col-span-1'} relative flex flex-col`}
-                    style={{ gridColumn: gridCol, gridRow: gridRow }}
+                    style={{ gridColumn: gridCol, gridRow: rowStyle }}
                   >
                     <Key k={k} onClick={handleKeyPress} />
                   </div>

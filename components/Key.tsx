@@ -24,10 +24,11 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
   }
 
   // Realistic key shape with 3D effect
+  // Use h-full for Enter key so it fits perfectly in the 2-row grid span without pushing rows apart.
   const keyShapeClass = `
     relative 
     w-full 
-    ${isEnter ? 'h-24 sm:h-28' : 'h-10 sm:h-12'} 
+    ${isEnter ? 'h-full min-h-[5.5rem]' : 'h-10 sm:h-12'} 
     rounded-[2px] 
     ${bgGradient}
     border-t border-white/20 border-b-2 border-b-black/60
@@ -42,8 +43,9 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
     <div className={`relative flex flex-col items-center justify-end h-full w-full ${k.className || ''}`}>
       
       {/* Chassis Label (Orange/Gold - Function f) */}
+      {/* Adjusted top position to -top-1 to bring it closer to the key */}
       {k.fLabel && (
-        <span className="absolute -top-3 md:-top-4 left-0 right-0 text-center text-[7px] sm:text-[9px] font-bold text-[#d97706] tracking-tight leading-none z-10 font-sans whitespace-nowrap overflow-visible">
+        <span className="absolute -top-1 left-0 right-0 text-center text-[7px] sm:text-[9px] font-bold text-[#e8b025] tracking-tight leading-none z-10 font-sans whitespace-nowrap overflow-visible">
           {k.fLabel}
         </span>
       )}
