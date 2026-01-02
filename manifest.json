@@ -1,0 +1,21 @@
+{
+  "short_name": "HP 12C",
+  "name": "HP 12C Platinum Emulator",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4063/4063009.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4063/4063009.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#e5e5e5",
+  "background_color": "#e5e5e5",
+  "orientation": "portrait"
+}

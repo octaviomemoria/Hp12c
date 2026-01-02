@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="theme-color" content="#e5e5e5" />
+    <meta name="description" content="HP 12C Platinum Financial Calculator Emulator with RPN and AI Guide." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HP 12C" />
+    
+    <title>HP 12C Platinum</title>
+    
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4063/4063009.png" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Custom shadow for realistic key press */
+      .key-shadow {
+        box-shadow: 0px 3px 0px 0px #1a1a1a, 2px 5px 5px 0px rgba(0,0,0,0.4);
+        transition: all 0.05s ease;
+      }
+      .key-shadow:active {
+        box-shadow: 0px 1px 0px 0px #1a1a1a, 1px 2px 2px 0px rgba(0,0,0,0.4);
+        transform: translateY(2px);
+      }
+      .lcd-text {
+        font-family: 'Share Tech Mono', monospace;
+      }
+      body {
+        background-color: #e5e5e5;
+        background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+        background-size: 20px 20px;
+        /* Prevent pull-to-refresh on mobile to feel more like an app */
+        overscroll-behavior-y: contain; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
