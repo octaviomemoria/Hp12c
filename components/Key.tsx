@@ -26,10 +26,11 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
   // Realistic key shape with 3D effect
   // Fixed height for portrait (h-10 sm:h-12)
   // Dynamic height for landscape (landscape:h-full) to fill the screen
+  // Removed min-h for ENTER in landscape (landscape:min-h-0) to allow it to shrink
   const keyShapeClass = `
     relative 
     w-full 
-    ${isEnter ? 'h-full min-h-[5.5rem]' : 'h-10 sm:h-12 landscape:h-full'} 
+    ${isEnter ? 'h-full min-h-[5.5rem] landscape:min-h-0' : 'h-10 sm:h-12 landscape:h-full'} 
     rounded-[2px] 
     ${bgGradient}
     border-t border-white/20 border-b-2 border-b-black/60
@@ -46,7 +47,7 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
       {/* Chassis Label (Orange/Gold - Function f) */}
       {/* Positioned slightly closer (-top-4) to clear the key button but not float too high */}
       {k.fLabel && (
-        <span className="absolute -top-4 left-0 right-0 text-center text-[8px] sm:text-[10px] font-bold text-[#e8b025] tracking-tight leading-none z-30 font-sans whitespace-nowrap overflow-visible">
+        <span className="absolute -top-4 left-0 right-0 text-center text-[8px] sm:text-[10px] landscape:text-[7px] font-bold text-[#e8b025] tracking-tight leading-none z-30 font-sans whitespace-nowrap overflow-visible">
           {k.fLabel}
         </span>
       )}
@@ -59,7 +60,7 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
         {/* Main Label */}
         <span className={`
           font-sans font-semibold 
-          ${isEnter ? 'text-sm mt-4' : 'text-xs sm:text-sm mt-1'} 
+          ${isEnter ? 'text-sm mt-4 landscape:mt-2' : 'text-xs sm:text-sm mt-1 landscape:text-[10px]'} 
           ${textColor}
           ${isOrange ? 'text-black' : 'text-white'}
         `}>
@@ -69,7 +70,7 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
         {/* Secondary Label (Blue - Function g) */}
         {k.gLabel && (
           <span className={`
-            mb-0.5 sm:mb-1 text-[7px] sm:text-[9px] font-bold font-sans
+            mb-0.5 sm:mb-1 text-[7px] sm:text-[9px] landscape:text-[6px] font-bold font-sans
             ${isBlue ? 'text-white' : 'text-[#60a5fa]'}
           `}>
             {k.gLabel}
