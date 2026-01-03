@@ -90,15 +90,22 @@ export const HP12C: React.FC = () => {
     <div className="
       relative 
       flex flex-col 
-      w-full max-w-[600px] 
+      w-full 
       bg-[#111] 
-      rounded-xl shadow-2xl border-4 border-[#222]
       overflow-hidden 
-      transform transition-transform hover:scale-[1.005]
+      transform transition-transform
+      /* Portrait / Desktop Defaults */
+      max-w-[600px] 
+      rounded-xl shadow-2xl border-4 border-[#222]
+      hover:scale-[1.005]
+      /* Landscape Mobile Overrides (Full Screen) */
+      landscape:max-w-none landscape:w-screen landscape:h-[100dvh] landscape:max-h-[100dvh]
+      landscape:rounded-none landscape:border-0 landscape:shadow-none landscape:hover:scale-100
+      landscape:lg:max-w-[900px] landscape:lg:h-auto landscape:lg:border-4 landscape:lg:rounded-xl /* Preserve desktop look on large screens */
     ">
         
       {/* TOP SECTION: SILVER / PLATINUM */}
-      <div className="relative bg-gradient-to-b from-[#e5e7eb] to-[#d1d5db] border-b-2 border-black p-4 sm:p-6 pb-2">
+      <div className="relative bg-gradient-to-b from-[#e5e7eb] to-[#d1d5db] border-b-2 border-black p-4 sm:p-6 pb-2 flex-none">
           <div className="flex justify-between items-start mb-4 px-1">
             <div className="flex flex-col">
               <span className="font-sans text-base sm:text-lg font-semibold text-gray-800 tracking-tight">HP 12c</span>
@@ -158,9 +165,10 @@ export const HP12C: React.FC = () => {
       </div>
 
       {/* BOTTOM SECTION: KEYBOARD AREA */}
-      <div className="bg-[#1a1a1a] p-2 sm:p-4 md:p-6 pb-6 sm:pb-8">
-        {/* Adjusted grid gap to be tighter (gap-y-2) to fix spacing issues */}
-        <div className="grid grid-cols-10 gap-x-1 gap-y-2 sm:gap-x-2 sm:gap-y-3">
+      {/* Increased top padding (pt-7) to provide clearance for the first row function labels */}
+      <div className="bg-[#1a1a1a] px-2 pb-2 pt-7 sm:px-4 sm:pb-4 sm:pt-10 flex-grow flex flex-col">
+        {/* Increased gap-y to ensure labels fit between rows */}
+        <div className="grid grid-cols-10 gap-x-1 gap-y-6 sm:gap-x-2 sm:gap-y-8 h-full">
           {CALCULATOR_KEYS.map((row, rIdx) => (
             <React.Fragment key={rIdx}>
               {row.map((k, kIdx) => {
@@ -176,7 +184,7 @@ export const HP12C: React.FC = () => {
                 return (
                   <div 
                     key={k.id} 
-                    className={`${k.className || 'col-span-1'} relative flex flex-col`}
+                    className={`${k.className || 'col-span-1'} relative flex flex-col h-full`}
                     style={{ gridColumn: gridCol, gridRow: rowStyle }}
                   >
                     <Key k={k} onClick={handleKeyPress} />

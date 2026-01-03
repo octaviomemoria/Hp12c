@@ -24,11 +24,12 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
   }
 
   // Realistic key shape with 3D effect
-  // Use h-full for Enter key so it fits perfectly in the 2-row grid span without pushing rows apart.
+  // Fixed height for portrait (h-10 sm:h-12)
+  // Dynamic height for landscape (landscape:h-full) to fill the screen
   const keyShapeClass = `
     relative 
     w-full 
-    ${isEnter ? 'h-full min-h-[5.5rem]' : 'h-10 sm:h-12'} 
+    ${isEnter ? 'h-full min-h-[5.5rem]' : 'h-10 sm:h-12 landscape:h-full'} 
     rounded-[2px] 
     ${bgGradient}
     border-t border-white/20 border-b-2 border-b-black/60
@@ -43,9 +44,9 @@ export const Key: React.FC<KeyProps> = ({ k, onClick }) => {
     <div className={`relative flex flex-col items-center justify-end h-full w-full ${k.className || ''}`}>
       
       {/* Chassis Label (Orange/Gold - Function f) */}
-      {/* Adjusted top position to -top-1 to bring it closer to the key */}
+      {/* Positioned slightly closer (-top-4) to clear the key button but not float too high */}
       {k.fLabel && (
-        <span className="absolute -top-1 left-0 right-0 text-center text-[7px] sm:text-[9px] font-bold text-[#e8b025] tracking-tight leading-none z-10 font-sans whitespace-nowrap overflow-visible">
+        <span className="absolute -top-4 left-0 right-0 text-center text-[8px] sm:text-[10px] font-bold text-[#e8b025] tracking-tight leading-none z-30 font-sans whitespace-nowrap overflow-visible">
           {k.fLabel}
         </span>
       )}

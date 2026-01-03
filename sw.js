@@ -1,11 +1,11 @@
-const CACHE_NAME = 'hp12c-platinum-v2';
+const CACHE_NAME = 'hp12c-platinum-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json'
 ];
 
-// Install Event - Cache Files
+// Install: Cache core local files immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event - Clean old caches
+// Activate: Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keyList) => {
@@ -31,18 +31,50 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - Serve from Cache, fall back to Network
+// Fetch: Strategy "Stale-While-Revalidate" for external resources
+// and "Cache First" for local resources.
 self.addEventListener('fetch', (event) => {
-  // Ignora requisições que não sejam GET ou que sejam para a API do Gemini (precisa de internet)
-  if (event.request.method !== 'GET' || event.request.url.includes('google')) {
+  const url = new URL(event.request.url);
+
+  // 1. Ignore API calls (GenAI) - they require internet
+  if (url.pathname.includes('generateContent') || event.request.method !== 'GET') {
     return;
   }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // Retorna cache se existir, senão busca na rede
-      return cachedResponse || fetch(event.request).then((networkResponse) => {
-         return networkResponse;
+      // If found in cache, return it immediately
+      if (cachedResponse) {
+        // Optional: Update cache in background for next time (Stale-While-Revalidate)
+        // This is useful for CDN scripts that might update versions
+        if (url.origin !== self.location.origin) {
+            fetch(event.request).then(response => {
+                if(response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+            }).catch(() => {});
+        }
+        return cachedResponse;
+      }
+
+      // If not in cache, fetch from network
+      return fetch(event.request).then((response) => {
+        // Check if we received a valid response
+        if (!response || response.status !== 200 || response.type !== 'basic' && response.type !== 'cors') {
+          return response;
+        }
+
+        // Cache the external resource (CDN scripts, fonts, etc.)
+        // This is crucial for Tailwind and React to work offline
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+
+        return response;
       });
     })
   );
