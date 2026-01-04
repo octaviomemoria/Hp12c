@@ -91,12 +91,12 @@ export const HP12C: React.FC = () => {
       relative 
       flex flex-col 
       w-full 
-      bg-[#111] 
+      bg-[#0f0f0f] 
       overflow-hidden 
       transform transition-transform
       /* Portrait / Desktop Defaults */
       max-w-[600px] 
-      rounded-xl shadow-2xl border-4 border-[#222]
+      rounded-xl shadow-2xl border-4 border-[#333]
       hover:scale-[1.005]
       /* Landscape Mobile Overrides (Full Screen) */
       landscape:max-w-none landscape:w-screen landscape:h-[100dvh] landscape:max-h-[100dvh]
@@ -104,25 +104,27 @@ export const HP12C: React.FC = () => {
       landscape:lg:max-w-[900px] landscape:lg:h-auto landscape:lg:border-4 landscape:lg:rounded-xl /* Preserve desktop look on large screens */
     ">
         
-      {/* TOP SECTION: SILVER / PLATINUM */}
-      <div className="relative bg-gradient-to-b from-[#e5e7eb] to-[#d1d5db] border-b-2 border-black p-4 sm:p-6 pb-2 flex-none landscape:p-2 landscape:pb-1">
+      {/* TOP SECTION: DARK TITANIUM THEME */}
+      <div className="relative bg-gradient-to-b from-[#3a3a3a] to-[#1f1f1f] border-b border-black p-4 sm:p-6 pb-2 flex-none landscape:p-2 landscape:pb-1">
           <div className="flex justify-between items-start mb-4 px-1 landscape:mb-1">
             <div className="flex flex-col">
-              <span className="font-sans text-base sm:text-lg font-semibold text-gray-800 tracking-tight landscape:text-xs">HP 12c</span>
-              <span className="font-sans text-xs sm:text-sm text-gray-600 -mt-1 landscape:text-[10px]">Platinum</span>
+              <span className="font-sans text-base sm:text-lg font-semibold text-gray-200 tracking-tight landscape:text-xs">CALCULADORA RPN</span>
+              <span className="font-sans text-xs sm:text-sm text-[#a3a3a3] -mt-1 landscape:text-[10px] uppercase tracking-wide">Pro Edition</span>
             </div>
-            <div className="bg-gradient-to-br from-[#333] to-[#000] rounded px-2 py-1 shadow-sm border border-gray-400 landscape:scale-75 landscape:origin-top-right">
-              <span className="font-serif italic font-bold text-white text-xl leading-none">hp</span>
+            {/* Dark Mode Badge */}
+            <div className="bg-black/40 rounded px-2 py-1 shadow-inner border border-white/10 landscape:scale-75 landscape:origin-top-right">
+              <span className="font-sans font-bold text-gray-300 text-lg leading-none tracking-widest text-opacity-80">RPN</span>
             </div>
           </div>
 
           {/* LCD Screen Container */}
           <div 
-            className="mx-auto bg-[#889] p-[2px] rounded-md shadow-inner border border-gray-500 w-full max-w-sm cursor-pointer relative group landscape:max-w-xs"
+            className="mx-auto bg-[#1a1a1a] p-[4px] rounded-md shadow-inner border border-[#444] w-full max-w-sm cursor-pointer relative group landscape:max-w-xs"
             onClick={handleCopy}
             title="Click to copy value"
           >
-            <div className="bg-[#aebfa3] h-14 sm:h-16 landscape:h-10 rounded shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-end px-4 relative overflow-hidden transition-colors group-hover:bg-[#b8c9ad]">
+            {/* LCD Screen Background - Slightly darker/greener for modern OLED look or classic LCD */}
+            <div className="bg-[#9dac92] h-14 sm:h-16 landscape:h-10 rounded-sm shadow-[inset_0_2px_6px_rgba(0,0,0,0.4)] flex items-center justify-end px-4 relative overflow-hidden transition-colors group-hover:bg-[#a6b59b]">
                 <div className="absolute inset-0 opacity-10 pointer-events-none" 
                       style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)', backgroundSize: '4px 4px'}}>
                 </div>
@@ -143,7 +145,7 @@ export const HP12C: React.FC = () => {
                         <span>{state.begMode ? 'BEGIN' : ''}</span>
                     </div>
                     
-                    {/* Financial Indicators: Always visible (flex), slightly scaled down in landscape */}
+                    {/* Financial Indicators */}
                     <div className="absolute top-1 left-0 flex flex-wrap gap-1 max-w-[150px] opacity-70 flex landscape:top-0 landscape:scale-90 landscape:origin-top-left">
                         {state.financial.n !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">n</div>}
                         {state.financial.i !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">i</div>}
@@ -156,7 +158,7 @@ export const HP12C: React.FC = () => {
                         RPN {state.pendingOp ? ` ${state.pendingOp}` : ''}
                     </div>
 
-                    <span className="lcd-text text-3xl sm:text-4xl landscape:text-2xl text-black font-medium tracking-widest drop-shadow-sm select-none truncate w-full block">
+                    <span className="lcd-text text-3xl sm:text-4xl landscape:text-2xl text-[#111] font-medium tracking-widest drop-shadow-sm select-none truncate w-full block">
                         {state.error || state.display}
                     </span>
                   </div>
@@ -165,10 +167,8 @@ export const HP12C: React.FC = () => {
           </div>
       </div>
 
-      {/* BOTTOM SECTION: KEYBOARD AREA */}
-      {/* Increased top padding (pt-7) to provide clearance for the first row function labels */}
-      {/* landscape:pt-4 reduced to save space, landscape:gap-y-2 reduced drastically to fit height */}
-      <div className="bg-[#1a1a1a] px-2 pb-2 pt-7 sm:px-4 sm:pb-4 sm:pt-10 landscape:pt-5 landscape:px-2 landscape:pb-1 flex-grow flex flex-col">
+      {/* BOTTOM SECTION: KEYBOARD AREA - MATTE BLACK */}
+      <div className="bg-[#121212] px-2 pb-2 pt-7 sm:px-4 sm:pb-4 sm:pt-10 landscape:pt-5 landscape:px-2 landscape:pb-1 flex-grow flex flex-col">
         <div className="grid grid-cols-10 gap-x-1 gap-y-6 sm:gap-x-2 sm:gap-y-8 landscape:gap-y-2 h-full">
           {CALCULATOR_KEYS.map((row, rIdx) => (
             <React.Fragment key={rIdx}>
@@ -179,7 +179,6 @@ export const HP12C: React.FC = () => {
                   gridCol = kIdx + 2;
                 }
                 
-                // Fix: Ensure row-span-2 is respected in inline styles
                 const rowStyle = k.className?.includes('row-span-2') ? `${gridRow} / span 2` : gridRow;
 
                 return (

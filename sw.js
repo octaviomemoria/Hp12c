@@ -1,21 +1,21 @@
-const CACHE_NAME = 'hp12c-platinum-v3';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'rpn-calc-offline-v7';
+const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json'
 ];
 
-// Install: Cache core local files immediately
+// Install: Cache the app shell immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(STATIC_ASSETS);
     })
   );
 });
 
-// Activate: Clean up old caches
+// Activate: Clean up old caches to ensure user gets updates
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keyList) => {
@@ -31,50 +31,56 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: Strategy "Stale-While-Revalidate" for external resources
-// and "Cache First" for local resources.
+// Fetch: Aggressive Caching Strategy
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // 1. Ignore API calls (GenAI) - they require internet
-  if (url.pathname.includes('generateContent') || event.request.method !== 'GET') {
+  // 1. Ignore API calls (GenAI needs internet)
+  if (url.pathname.includes('generateContent') || url.hostname.includes('googleapis.com/v1beta')) {
     return;
   }
 
+  // 2. Handle Navigation (HTML) - Network First, then Cache
+  // This ensures the user gets the latest version if online, but works if offline.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, response.clone());
+            return response;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // 3. Handle Assets (JS, CSS, Fonts, Images, TSX) - Cache First, then Network
+  // This includes local files (.tsx, .ts) and external CDNs (React, Tailwind, Fonts)
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // If found in cache, return it immediately
       if (cachedResponse) {
-        // Optional: Update cache in background for next time (Stale-While-Revalidate)
-        // This is useful for CDN scripts that might update versions
-        if (url.origin !== self.location.origin) {
-            fetch(event.request).then(response => {
-                if(response && response.status === 200) {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-            }).catch(() => {});
-        }
         return cachedResponse;
       }
 
-      // If not in cache, fetch from network
       return fetch(event.request).then((response) => {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== 'basic' && response.type !== 'cors') {
+        // Valid response check
+        if (!response || response.status !== 200 || response.type === 'error') {
           return response;
         }
 
-        // Cache the external resource (CDN scripts, fonts, etc.)
-        // This is crucial for Tailwind and React to work offline
+        // IMPORTANT: Cache opaque responses (CDN) and basic responses
         const responseToCache = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
         });
 
         return response;
+      }).catch(err => {
+         console.log('Fetch failed (offline): ', event.request.url);
       });
     })
   );
