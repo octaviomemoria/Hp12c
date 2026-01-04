@@ -143,7 +143,8 @@ export const HP12C: React.FC = () => {
                         <span>{state.begMode ? 'BEGIN' : ''}</span>
                     </div>
                     
-                    <div className="absolute top-1 left-0 flex flex-wrap gap-1 max-w-[150px] opacity-70 hidden sm:flex">
+                    {/* Financial Indicators: Always visible (flex), slightly scaled down in landscape */}
+                    <div className="absolute top-1 left-0 flex flex-wrap gap-1 max-w-[150px] opacity-70 flex landscape:top-0 landscape:scale-90 landscape:origin-top-left">
                         {state.financial.n !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">n</div>}
                         {state.financial.i !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">i</div>}
                         {state.financial.PV !== 0 && <div className="bg-black/10 px-1 py-[1px] rounded-[2px] text-[7px] font-bold text-black border border-black/10 leading-none">PV</div>}

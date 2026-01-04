@@ -5,7 +5,7 @@ const STORAGE_KEY = 'hp12c-platinum-state-v1';
 
 const INITIAL_STATE: CalculatorState = {
   stack: [0, 0, 0, 0], // X, Y, Z, T
-  display: '0.00',
+  display: '0,00',
   lastX: 0,
   inputBuffer: null,
   modifiers: ModifierState.NONE,
@@ -26,13 +26,23 @@ const INITIAL_STATE: CalculatorState = {
 
 const formatDisplay = (num: number, decimals: number, format: 'FIX' | 'SCI'): string => {
   if (!isFinite(num) || isNaN(num)) return 'Error';
-  if (format === 'SCI') return num.toExponential(decimals).replace('+', '');
+  
+  // Handling Scientific Notation (replace dot with comma for PT-BR feel)
+  if (format === 'SCI') {
+    return num.toExponential(decimals).replace('+', '').replace('.', ',');
+  }
+  
   const abs = Math.abs(num);
-  if (abs >= 1e10 || (abs > 0 && abs < 1e-9)) return num.toExponential(decimals).replace('+', '');
-  return num.toLocaleString('en-US', { 
+  // Auto switch to SCI if too large or too small
+  if (abs >= 1e10 || (abs > 0 && abs < 1e-9)) {
+    return num.toExponential(decimals).replace('+', '').replace('.', ',');
+  }
+
+  // Brazilian Format: 1.000,00
+  return num.toLocaleString('pt-BR', { 
     minimumFractionDigits: decimals, 
     maximumFractionDigits: decimals 
-  }).replace(/,/g, '');
+  });
 };
 
 const calculateTVM = (n: number, iPct: number, pv: number, pmt: number, fv: number, beg: boolean, solveFor: 'FV'|'PV'|'PMT') => {
@@ -193,10 +203,11 @@ export const useHP12C = () => {
       if (key.id === 'PASTE_INPUT' && key.value) {
           const pastedVal = String(key.value);
           // If in result mode (inputBuffer is null), we treat this like typing a new number
+          const displayVal = pastedVal.replace('.', ',');
           return {
               ...prev,
               inputBuffer: pastedVal,
-              display: pastedVal + '_',
+              display: displayVal + '_',
               modifiers: ModifierState.NONE
           };
       }
@@ -215,7 +226,8 @@ export const useHP12C = () => {
       if (prev.pendingOp && (prev.pendingOp.startsWith('STO') || prev.pendingOp.startsWith('RCL'))) {
         if (key.action === 'DOT') {
           if (prev.pendingOp.includes('.')) return prev;
-          return { ...prev, pendingOp: prev.pendingOp + '.', display: prev.pendingOp + '.' };
+          const newOp = prev.pendingOp + '.';
+          return { ...prev, pendingOp: newOp, display: newOp.replace('.', ',') };
         }
         if (key.action === 'NUM') {
           const digit = Number(key.value);
@@ -480,7 +492,10 @@ export const useHP12C = () => {
         let buf = prev.inputBuffer || '';
         const char = key.action === 'DOT' ? '.' : String(key.value);
         if (buf.length < 15) { if (char === '.' && buf.includes('.')) return prev; buf += char; }
-        return { ...prev, inputBuffer: buf, display: buf + '_', modifiers: ModifierState.NONE };
+        
+        // Show comma on screen instead of dot while typing
+        const displayBuf = buf.replace('.', ',');
+        return { ...prev, inputBuffer: buf, display: displayBuf + '_', modifiers: ModifierState.NONE };
       }
       if (key.action === 'ENTER') {
         const val = prev.inputBuffer ? parseFloat(prev.inputBuffer) : prev.stack[0];
@@ -511,7 +526,8 @@ export const useHP12C = () => {
       if (key.action === 'CHS') {
         if (prev.inputBuffer) {
           let b = prev.inputBuffer.startsWith('-') ? prev.inputBuffer.substring(1) : '-' + prev.inputBuffer;
-          return { ...prev, inputBuffer: b, display: b + '_', modifiers: ModifierState.NONE };
+          const disp = b.replace('.', ',');
+          return { ...prev, inputBuffer: b, display: disp + '_', modifiers: ModifierState.NONE };
         }
         return { ...prev, stack: [-prev.stack[0], prev.stack[1], prev.stack[2], prev.stack[3]], display: formatDisplay(-prev.stack[0], prev.decimals, prev.displayFormat), modifiers: ModifierState.NONE };
       }
